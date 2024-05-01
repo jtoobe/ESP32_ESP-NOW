@@ -1,3 +1,12 @@
+/*
+ * Para que el ESP32 emita un mensaje random 
+ * 
+ * 
+ * 
+ */
+
+
+
 #include <esp_now.h>
 #include <WiFi.h>
 
@@ -5,7 +14,7 @@
 uint8_t broadcastAddress[] = {0x4C, 0x75, 0x25, 0x0C, 0x73, 0x55};
 
 // Ejemplo de estructura para enviar datos
-// Debe coincidir con la estructura del receptor
+// Debe coincidir con la estructura del receptor IMPORTANTE !!!!!
 typedef struct Estruct {
     int id; // debe ser único para cada placa emisora
     int x;
