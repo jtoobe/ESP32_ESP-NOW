@@ -1,41 +1,48 @@
-// ESCLAVO (recibe datos del maestro)
-
+// ESP32 recibe datos vis ESP-NOW
 
 #include <esp_now.h>
 #include <WiFi.h>
-// Estructura de datos que va a contener el mensaje recibido
-// requerido, debe ser igual al del maestro
 
-struct aRecibir {
-  char palabra[6];
+// Structure example to receive data
+// Must match the sender structure
+typedef struct struct_message {
+char palabra[6];
   int numero;
-};
-// crea una estructura para recibir los datos
-aRecibir Datos;
+} struct_message;
 
-// Funcion que se ejecuta cuando se recibe un mensaje
-void OnRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
-  memcpy(&Datos, incomingData, sizeof(Datos));
+// Create a struct_message called myData
+struct_message myData;
+
+// callback function that will be executed when data is received
+void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+  memcpy(&myData, incomingData, sizeof(myData));
   Serial.print("Bytes recibidos: ");
   Serial.println(len);
-  Serial.print("Datos recibidos : ");
-  Serial.println(Datos.palabra);
-  Serial.println(Datos.numero);
+  Serial.print("Char: ");
+  Serial.println(myData.palabra);
+  Serial.print("Int: ");
+  Serial.println(myData.numero);
+  Serial.println();
 }
+ 
 void setup() {
-  // inicializo Serial Monitor
+  // Initialize Serial Monitor
   Serial.begin(115200);
-  // Seteo placa como estacion Wi-Fi
+  
+  // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
-  // Inicializo ESP-NOW
+
+  // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error inicializando ESP-NOW");
     return;
   }
-  // Despues de inicializar el protocolo ESP-Now registro la funcion que recibe los mensajes
-  // para poder ejecutarla cuando llega un mensaje.
-  esp_now_register_recv_cb(OnRecv);
+  
+  // Once ESPNow is successfully Init, we will register for recv CB to
+  // get recv packer info
+  esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
 }
-
+ 
 void loop() {
+
 }
