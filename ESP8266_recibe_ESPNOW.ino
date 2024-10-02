@@ -3,8 +3,9 @@
 
 // Estructura para los datos recibidos
 typedef struct {
-  char message[50];
-  int value;
+  int id;  // debe ser único para cada placa emisora
+  int x;
+  int y;
 } Data;
 
 Data receivedData;
@@ -13,10 +14,12 @@ Data receivedData;
 void onDataReceived(uint8_t *mac_addr, uint8_t *data, uint8_t len) {
   memcpy(&receivedData, data, sizeof(receivedData));
   Serial.println("Datos recibidos:");
-  Serial.print("Mensaje: ");
-  Serial.println(receivedData.message);
+  Serial.print("Id: ");
+  Serial.println(receivedData.id);
   Serial.print("Valor: ");
-  Serial.println(receivedData.value);
+  Serial.println(receivedData.x);
+  Serial.print("Valor: ");
+  Serial.println(receivedData.y);
 }
 
 void setup() {
