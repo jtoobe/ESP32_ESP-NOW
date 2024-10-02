@@ -1,13 +1,13 @@
 /*
-* Para ESP8266
-* Envia un dato cada 5 segundos
+* Para LOLIN D1 mini clone, FUNCIONA TAMBIEN CON esp01
+* Envia un dato cada 2 segundos
 */
  
 #include <ESP8266WiFi.h>
 #include <espnow.h>
  
 // Reemplazar con la MAC Address del ESP que recibe
-uint8_t broadcastAddress[] = {0x18, 0xFE, 0x34, 0xF3, 0x44, 0xE3};
+uint8_t broadcastAddress[] = {0xD4,0x8A,0xFC,0xD0,0x8C,0xF8};
 
 int cuenta=0;
 // Creo una estructura para enviar los datos
@@ -62,5 +62,5 @@ void loop() {
   // envio el mensaje via ESP-NOW
   esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
  
-  delay(5000);
+  delay(2000);
 }
