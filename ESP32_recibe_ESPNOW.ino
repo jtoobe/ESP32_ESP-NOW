@@ -1,48 +1,55 @@
 // ESP32 recibe datos vis ESP-NOW
 
-#include <esp_now.h>
 #include <WiFi.h>
+#include <esp_now.h>
 
-// Structure example to receive data
-// Must match the sender structure
+// Estructura para recibir datos
 typedef struct struct_message {
-char palabra[6];
+  char palabra[6];
   int numero;
 } struct_message;
 
-// Create a struct_message called myData
+// Variable para almacenar los datos recibidos
 struct_message myData;
 
-// callback function that will be executed when data is received
-void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+// Función que se ejecuta cuando se reciben los datos
+void OnDataRecv(const esp_now_recv_info *info, const uint8_t *incomingData, int len) {
+  // Copia los datos recibidos en la estructura myData
   memcpy(&myData, incomingData, sizeof(myData));
-  Serial.print("Bytes recibidos: ");
-  Serial.println(len);
-  Serial.print("Char: ");
-  Serial.println(myData.palabra);
-  Serial.print("Int: ");
-  Serial.println(myData.numero);
-  Serial.println();
-}
- 
-void setup() {
-  // Initialize Serial Monitor
-  Serial.begin(115200);
   
-  // Set device as a Wi-Fi Station
+  // Mostrar la dirección MAC del emisor (si es necesario)
+  char macStr[18];
+  snprintf(macStr, sizeof(macStr), "%02X:%02X:%02X:%02X:%02X:%02X", 
+           info->src_addr[0], info->src_addr[1], info->src_addr[2], 
+           info->src_addr[3], info->src_addr[4], info->src_addr[5]);
+  Serial.print("Datos recibidos de: ");
+  Serial.println(macStr);
+
+  // Mostrar los datos recibidos
+  Serial.print("Palabra: ");
+  Serial.println(myData.palabra);
+  Serial.print("Número: ");
+  Serial.println(myData.numero);
+}
+
+void setup() {
+  // Inicializa la comunicación serial
+  Serial.begin(115200);
+
+  // Configura el ESP32 en modo Wi-Fi Station
   WiFi.mode(WIFI_STA);
 
-  // Init ESP-NOW
+  // Inicializa ESP-NOW
   if (esp_now_init() != ESP_OK) {
-    Serial.println("Error inicializando ESP-NOW");
+    Serial.println("Error al inicializar ESP-NOW");
     return;
   }
-  
-  // Once ESPNow is successfully Init, we will register for recv CB to
-  // get recv packer info
-  esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
-}
- 
-void loop() {
 
+  // Registra la función de recepción de datos
+  esp_now_register_recv_cb(OnDataRecv);
 }
+
+void loop() {
+  // No se requiere código en el loop
+}
+
